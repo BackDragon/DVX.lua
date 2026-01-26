@@ -220,6 +220,27 @@ RunService.Stepped:Connect(function()
     end
 end)
 
+
+
+-- FullBright
+local fbConn
+TabPlayer:Toggle({
+    Title = "FullBright",
+    Callback = function(v)
+        if v then
+            fbConn = RunService.RenderStepped:Connect(function()
+                Lighting.Brightness = 2
+                Lighting.ClockTime = 14
+                Lighting.FogEnd = 1e10
+                Lighting.GlobalShadows = false
+            end)
+        else
+            if fbConn then fbConn:Disconnect() end
+            Lighting.GlobalShadows = true
+        end
+    end
+})
+
 TabPlayer:Button({
     Title = "Fly",
     Callback = function()
