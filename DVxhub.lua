@@ -1,20 +1,27 @@
+--==================================================
 -- Load WindUI
+--==================================================
 local WindUI = loadstring(game:HttpGet(
     "https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"
 ))()
 
+--==================================================
 -- Services
+--==================================================
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
+
 local LP = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
 
+--==================================================
 -- Window
+--==================================================
 local Window = WindUI:CreateWindow({
-    Title = "DVX hub",
-    Author = "Dvx",
+    Title = "DVX Hub",
+    Author = "DVX",
     Folder = "DVX Hub"
 })
 
@@ -23,30 +30,46 @@ local TabPlayer = Window:Tab({ Title = "Player", Icon = "person" })
 local TabTP     = Window:Tab({ Title = "Teleport", Icon = "location" })
 local TabESP    = Window:Tab({ Title = "ESP", Icon = "eye" })
 
--------------------------------------------------
--- ESP
--------------------------------------------------
-local ESPEnabled, NameTagEnabled = false, false
+--==================================================
+-- ESP (FIXED)
+--==================================================
+local ESPEnabled = false
 local ESPObjects = {}
-local ESPColor = Color3.fromRGB(255,60,60)
+local ESPColor = Color3.fromRGB(255, 60, 60)
 
-local function CreateESP(plr)
-    if not plr.Character then return end
-    if ESPObjects[plr] then return end
+local function ClearESP(plr)
+    if ESPObjects[plr] then
+        ESPObjects[plr].Highlight:Destroy()
+        ESPObjects[plr] = nil
+    end
+end
+
+local function CreateESP(plr, char)
+    if not ESPEnabled or not char then return end
+    ClearESP(plr)
 
     local h = Instance.new("Highlight")
     h.FillColor = ESPColor
     h.FillTransparency = 0.5
     h.OutlineTransparency = 0.25
-    h.Adornee = plr.Character
+    h.Adornee = char
     h.Parent = Workspace
-    ESPObjects[plr] = {Highlight = h}
+
+    ESPObjects[plr] = { Highlight = h }
 end
 
-local function RemoveESP(plr)
-    if ESPObjects[plr] then
-        for _,v in pairs(ESPObjects[plr]) do v:Destroy() end
-        ESPObjects[plr] = nil
+local function HookPlayer(plr)
+    if plr == LP then return end
+
+    plr.CharacterAdded:Connect(function(char)
+        task.wait(0.4)
+        if ESPEnabled then
+            CreateESP(plr, char)
+        end
+    end)
+
+    if plr.Character then
+        CreateESP(plr, plr.Character)
     end
 end
 
@@ -54,26 +77,25 @@ TabESP:Toggle({
     Title = "ESP Player",
     Callback = function(v)
         ESPEnabled = v
-        for _,p in pairs(Players:GetPlayers()) do
-            if p ~= LP then
-                if v then CreateESP(p) else RemoveESP(p) end
+        for _,p in ipairs(Players:GetPlayers()) do
+            if v then
+                HookPlayer(p)
+            else
+                ClearESP(p)
             end
         end
     end
 })
 
-Players.PlayerAdded:Connect(function(p)
-    task.wait(1)
-    if ESPEnabled then CreateESP(p) end
-end)
-Players.PlayerRemoving:Connect(RemoveESP)
+Players.PlayerAdded:Connect(HookPlayer)
+Players.PlayerRemoving:Connect(ClearESP)
 
--------------------------------------------------
+--==================================================
 -- PLAYER
--------------------------------------------------
+--==================================================
 TabPlayer:Slider({
     Title = "WalkSpeed",
-    Value = {Min = 16, Max = 700, Default = 16},
+    Value = { Min = 16, Max = 700, Default = 16 },
     Callback = function(v)
         local h = LP.Character and LP.Character:FindFirstChildOfClass("Humanoid")
         if h then h.WalkSpeed = v end
@@ -82,7 +104,7 @@ TabPlayer:Slider({
 
 TabPlayer:Slider({
     Title = "JumpPower",
-    Value = {Min = 50, Max = 500, Default = 50},
+    Value = { Min = 50, Max = 500, Default = 50 },
     Callback = function(v)
         local h = LP.Character and LP.Character:FindFirstChildOfClass("Humanoid")
         if h then
@@ -103,14 +125,25 @@ TabPlayer:Toggle({
 
 RunService.Stepped:Connect(function()
     if noclip and LP.Character then
-        for _,p in pairs(LP.Character:GetChildren()) do
-            if p:IsA("BasePart") then p.CanCollide = false end
+        for _,p in ipairs(LP.Character:GetChildren()) do
+            if p:IsA("BasePart") then
+                p.CanCollide = false
+            end
         end
     end
 end)
 
--- FullBright
+--==================================================
+-- FullBright (FIXED)
+--==================================================
 local fbConn
+local oldLighting = {
+    Brightness = Lighting.Brightness,
+    ClockTime = Lighting.ClockTime,
+    FogEnd = Lighting.FogEnd,
+    GlobalShadows = Lighting.GlobalShadows
+}
+
 TabPlayer:Toggle({
     Title = "FullBright",
     Callback = function(v)
@@ -118,17 +151,21 @@ TabPlayer:Toggle({
             fbConn = RunService.RenderStepped:Connect(function()
                 Lighting.Brightness = 2
                 Lighting.ClockTime = 14
-                Lighting.FogEnd = 1e10
+                Lighting.FogEnd = 1e9
                 Lighting.GlobalShadows = false
             end)
         else
             if fbConn then fbConn:Disconnect() end
-            Lighting.GlobalShadows = true
+            for k,val in pairs(oldLighting) do
+                Lighting[k] = val
+            end
         end
     end
 })
 
--- Fly (โหลดสคริปต์เดิม)
+--==================================================
+-- Fly (External Script)
+--==================================================
 TabPlayer:Button({
     Title = "Fly",
     Callback = function()
@@ -136,15 +173,18 @@ TabPlayer:Button({
     end
 })
 
--------------------------------------------------
--- TP / SPECTATE
--------------------------------------------------
-local target, spectate = nil, false
+--==================================================
+-- TELEPORT / SPECTATE (FIXED)
+--==================================================
+local target
+local spectating = false
 
 local function PlayerList()
     local t = {}
-    for _,p in pairs(Players:GetPlayers()) do
-        if p ~= LP then table.insert(t, p.Name) end
+    for _,p in ipairs(Players:GetPlayers()) do
+        if p ~= LP then
+            table.insert(t, p.Name)
+        end
     end
     return t
 end
@@ -153,18 +193,18 @@ local Drop = TabTP:Dropdown({
     Title = "Select Player",
     Options = PlayerList(),
     Callback = function(v)
-        target = Players:FindFirstChild(v[1])
+        target = Players:FindFirstChild(v)
     end
 })
 
 TabTP:Button({
     Title = "Teleport",
     Callback = function()
-        if not target then return end
-        local r1 = LP.Character:FindFirstChild("HumanoidRootPart")
-        local r2 = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+        if not target or not target.Character then return end
+        local r1 = LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+        local r2 = target.Character:FindFirstChild("HumanoidRootPart")
         if r1 and r2 then
-            r1.CFrame = r2.CFrame + Vector3.new(0,3,0)
+            r1.CFrame = r2.CFrame * CFrame.new(0, 3, 0)
         end
     end
 })
@@ -172,18 +212,23 @@ TabTP:Button({
 TabTP:Button({
     Title = "Spectate",
     Callback = function()
-        if not target then return end
-        spectate = not spectate
-        Camera.CameraSubject = spectate and target.Character:WaitForChild("Humanoid")
-            or LP.Character:WaitForChild("Humanoid")
+        if not target or not target.Character then return end
+
+        local hum = target.Character:FindFirstChildOfClass("Humanoid")
+        local myHum = LP.Character and LP.Character:FindFirstChildOfClass("Humanoid")
+        if not hum or not myHum then return end
+
+        spectating = not spectating
+        Camera.CameraSubject = spectating and hum or myHum
     end
 })
 
 Players.PlayerAdded:Connect(function()
-    task.wait(1)
+    task.wait(0.5)
     Drop:Refresh(PlayerList(), true)
 end)
+
 Players.PlayerRemoving:Connect(function()
-    task.wait(1)
+    task.wait(0.5)
     Drop:Refresh(PlayerList(), true)
 end)
