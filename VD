@@ -93,8 +93,8 @@ local function clearHighlight(model)
 end
 
 local Window = WindUI:CreateWindow({
-    Title = "VD & FIKO",
-    Subtitle = "FIKO HUB",
+    Title = "VDX",
+    Subtitle = "DVX hub",
     Size = UDim2.fromOffset(620, 460),
     Theme = "Dark",
     Acrylic = true,
@@ -232,11 +232,11 @@ local function unwatchPlayer(p)
 end
 
 TabESP:CreateSection("ESP")
-TabESP:CreateToggle({Name="เปิดมองผู้เล่น",CurrentValue=false,Flag="PlayerESP",Callback=function(s)
+TabESP:Toggle({Name="เปิดมองผู้เล่น",CurrentValue=false,Flag="PlayerESP",Callback=function(s)
     playerESPEnabled=s
     if playerESPEnabled or nametagsEnabled then startESPLoop() else stopESPLoop() end
 end})
-TabESP:CreateToggle({Name="เปิดมองชื่อ",CurrentValue=false,Flag="Nametags",Callback=function(s)
+TabESP:Toggle({Name="เปิดมองชื่อ",CurrentValue=false,Flag="Nametags",Callback=function(s)
     nametagsEnabled=s
     if playerESPEnabled or nametagsEnabled then startESPLoop() else stopESPLoop() end
 end})
@@ -491,19 +491,19 @@ local function setWorldToggle(cat, state)
 end
 
 TabWorld:CreateSection("มองของต่างๆ")
-TabWorld:CreateToggle({Name="เครื่องปั่นไฟ",CurrentValue=false,Flag="Gen",Callback=function(s) setWorldToggle("Generator", s) end})
-TabWorld:CreateToggle({Name="แท่นวาง",CurrentValue=false,Flag="Hook",Callback=function(s) setWorldToggle("Hook", s) end})
-TabWorld:CreateToggle({Name="ประตู",CurrentValue=false,Flag="Gate",Callback=function(s) setWorldToggle("Gate", s) end})
-TabWorld:CreateToggle({Name="หน้าต่าง",CurrentValue=false,Flag="Window",Callback=function(s) setWorldToggle("Window", s) end})
-TabWorld:CreateToggle({Name="แผ่นไม้",CurrentValue=false,Flag="Pallet",Callback=function(s) setWorldToggle("Palletwrong", s) end})
-TabWorld:CreateToggle({Name="ฟักทอง",CurrentValue=false,Flag="Pumpkin",Callback=function(s) setWorldToggle("Pumpkin", s) end})
+TabWorld:Toggle({Name="เครื่องปั่นไฟ",CurrentValue=false,Flag="Gen",Callback=function(s) setWorldToggle("Generator", s) end})
+TabWorld:Toggle({Name="แท่นวาง",CurrentValue=false,Flag="Hook",Callback=function(s) setWorldToggle("Hook", s) end})
+TabWorld:Toggle({Name="ประตู",CurrentValue=false,Flag="Gate",Callback=function(s) setWorldToggle("Gate", s) end})
+TabWorld:Toggle({Name="หน้าต่าง",CurrentValue=false,Flag="Window",Callback=function(s) setWorldToggle("Window", s) end})
+TabWorld:Toggle({Name="แผ่นไม้",CurrentValue=false,Flag="Pallet",Callback=function(s) setWorldToggle("Palletwrong", s) end})
+TabWorld:Toggle({Name="ฟักทอง",CurrentValue=false,Flag="Pumpkin",Callback=function(s) setWorldToggle("Pumpkin", s) end})
 TabWorld:CreateSection("Colors")
-TabWorld:CreateColorPicker({Name="สีเครื่องปั่นไฟ",Color=worldColors.Generator,Flag="GenCol",Callback=function(c) worldColors.Generator=c end})
-TabWorld:CreateColorPicker({Name="สีแท่นวาง",Color=worldColors.Hook,Flag="HookCol",Callback=function(c) worldColors.Hook=c end})
-TabWorld:CreateColorPicker({Name="สีประตู",Color=worldColors.Gate,Flag="GateCol",Callback=function(c) worldColors.Gate=c end})
-TabWorld:CreateColorPicker({Name="สีหน้าต่าง",Color=worldColors.Window,Flag="WinCol",Callback=function(c) worldColors.Window=c end})
-TabWorld:CreateColorPicker({Name="สีแผ่นไม้",Color=worldColors.Palletwrong,Flag="PalCol",Callback=function(c) worldColors.Palletwrong=c end})
-TabWorld:CreateColorPicker({Name="สีฟักทอง",Color=worldColors.Pumpkin,Flag="PumpCol",Callback=function(c) worldColors.Pumpkin=c end})
+TabWorld:ColorPicker({Name="สีเครื่องปั่นไฟ",Color=worldColors.Generator,Flag="GenCol",Callback=function(c) worldColors.Generator=c end})
+TabWorld:ColorPicker({Name="สีแท่นวาง",Color=worldColors.Hook,Flag="HookCol",Callback=function(c) worldColors.Hook=c end})
+TabWorld:ColorPicker({Name="สีประตู",Color=worldColors.Gate,Flag="GateCol",Callback=function(c) worldColors.Gate=c end})
+TabWorld:ColorPicker({Name="สีหน้าต่าง",Color=worldColors.Window,Flag="WinCol",Callback=function(c) worldColors.Window=c end})
+TabWorld:ColorPicker({Name="สีแผ่นไม้",Color=worldColors.Palletwrong,Flag="PalCol",Callback=function(c) worldColors.Palletwrong=c end})
+TabWorld:ColorPicker({Name="สีฟักทอง",Color=worldColors.Pumpkin,Flag="PumpCol",Callback=function(c) worldColors.Pumpkin=c end})
 
 local initLighting = {
     Brightness = Lighting.Brightness,
