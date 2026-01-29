@@ -1,4 +1,6 @@
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local WindUI = loadstring(game:HttpGet(
+    "https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"
+))()
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -90,19 +92,21 @@ local function clearHighlight(model)
     end
 end
 
-local Window   = Rayfield:CreateWindow({
-    Name="VD & FIKO",
-    LoadingTitle="FIKO HUB",
-    LoadingSubtitle="By FIKO",
-    ConfigurationSaving={Enabled=true,FolderName="FIKO HUB",FileName="FIKO"},
-    KeySystem=false
+local Window = WindUI:CreateWindow({
+    Title = "VD & FIKO",
+    Subtitle = "FIKO HUB",
+    Size = UDim2.fromOffset(620, 460),
+    Theme = "Dark",
+    Acrylic = true,
+    KeySystem = false
 })
-local TabPlayer= Window:CreateTab("ผู้เล่น")
-local TabESP   = Window:CreateTab("ESP")
-local TabWorld = Window:CreateTab("มองของในแมพ")
-local TabVisual= Window:CreateTab("ปรับแสง")
-local TabMisc  = Window:CreateTab("ตั้งค่าช่วยเล่น")
-local TabDiscord=Window:CreateTab("Discord")
+
+local TabPlayer = Window:CreateTab({ Title = "ผู้เล่น", Icon = "user" })
+local TabESP    = Window:CreateTab({ Title = "ESP", Icon = "eye" })
+local TabWorld  = Window:CreateTab({ Title = "มองของในแมพ", Icon = "map" })
+local TabVisual = Window:CreateTab({ Title = "ปรับแสง", Icon = "sun" })
+local TabMisc   = Window:CreateTab({ Title = "ตั้งค่าช่วยเล่น", Icon = "settings" })
+
 local function getRole(p)
     local tn = p.Team and p.Team.Name and p.Team.Name:lower() or ""
     if tn:find("killer") then return "Killer" end
