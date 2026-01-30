@@ -1532,7 +1532,6 @@ do
     end)
 end
 
-Rayfield:LoadConfiguration()
 task.defer(function()
     if getRole(LP)=="Killer" then
         if speedEnforced then
