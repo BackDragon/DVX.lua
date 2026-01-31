@@ -992,7 +992,7 @@ local SpeedLockToggle = TabPlayer:CreateToggle({
     Flag="SpeedLock",
     Callback=function(state)
         if state and getRole(LP)=="Killer" then
-            Rayfield:Notify({Title="Speed",Content="Disabled for Killer team",Duration=4})
+            WindUI:Notify({Title="Speed",Content="Disabled for Killer team",Duration=4})
             pcall(function() SpeedLockToggle:Set(false) end)
             return
         end
@@ -1009,7 +1009,7 @@ local SpeedLockToggle = TabPlayer:CreateToggle({
         else
             disconnectAll()
             applyDisabledState()
-            Rayfield:Notify({Title="Speed",Content="Speed Lock disabled (baseline restored)",Duration=3})
+            WindUI:Notify({Title="Speed",Content="Speed Lock disabled (baseline restored)",Duration=3})
         end
     end
 })
@@ -1047,7 +1047,7 @@ local function setNoclip(state)
         noclipTouched={}
     end
 end
-TabPlayer:CreateToggle({Name="เดินทะลุ",CurrentValue=false,Flag="Noclip",Callback=function(s) setNoclip(s) end})
+TabPlayer:Toggle({Title="เดินทะลุ",CurrentValue=false,Flag="Noclip",Callback=function(s) setNoclip(s) end})
 LP.CharacterAdded:Connect(function() if noclipEnabled then task.wait(0.2) setNoclip(true) end end)
 
 TabPlayer:CreateSection("Teleports")
@@ -1099,8 +1099,8 @@ end
 -----------------------------------------------------
 -- 🪄 Dropdown รายชื่อผู้เล่น (ใช้ร่วมกัน)
 -----------------------------------------------------
-local PlayerDropdown = TabPlayer:CreateDropdown({
-	Name = "เลือกผู้เล่น",
+local Dropdown = Tab:Dropdown({
+	Title = "เลือกผู้เล่น",
 	Options = GetPlayerList(),
 	CurrentOption = {},
 	MultipleOptions = false,
@@ -1114,14 +1114,14 @@ local PlayerDropdown = TabPlayer:CreateDropdown({
 -----------------------------------------------------
 -- ⚡ ปุ่มวาร์ปไปหาผู้เล่น
 -----------------------------------------------------
-TabPlayer:CreateButton({
-	Name = "⚡ วาร์ปไปหาผู้เล่น",
+TabPlayer:Button({
+	Title = "⚡ วาร์ปไปหาผู้เล่น",
 	Callback = function()
 		local myChar = player.Character or player.CharacterAdded:Wait()
 		local myRoot = myChar:FindFirstChild("HumanoidRootPart")
 
 		if not targetPlayer then
-			Rayfield:Notify({
+			WindUI:Notify({
 				Title = "⚠️ ยังไม่ได้เลือกผู้เล่น",
 				Content = "กรุณาเลือกชื่อจากรายการก่อน",
 				Duration = 2
@@ -1136,13 +1136,13 @@ TabPlayer:CreateButton({
 
 		if myRoot and targetRoot then
 			myRoot.CFrame = targetRoot.CFrame + Vector3.new(0, 3, 0)
-			Rayfield:Notify({
+			WindUI:Notify({
 				Title = "✅ วาร์ปสำเร็จ!",
 				Content = "คุณถูกวาร์ปไปหา " .. targetPlayer.Name,
 				Duration = 2
 			})
 		else
-			Rayfield:Notify({
+			WindUI:Notify({
 				Title = "❌ วาร์ปล้มเหลว",
 				Content = "ไม่พบตำแหน่งของผู้เล่นเป้าหมาย",
 				Duration = 3
@@ -1154,11 +1154,11 @@ TabPlayer:CreateButton({
 -----------------------------------------------------
 -- 🎥 ปุ่มเปิด/ปิดโหมดมองผู้เล่น (Spectate)
 -----------------------------------------------------
-TabPlayer:CreateButton({
-	Name = " เปิด / ปิดโหมดมองคนอื่น",
+TabPlayer:Button({
+	Title = " เปิด / ปิดโหมดมองคนอื่น",
 	Callback = function()
 		if not targetPlayer then
-			Rayfield:Notify({
+			WindUI:Notify({
 				Title = "⚠️ ยังไม่ได้เลือกผู้เล่น",
 				Content = "กรุณาเลือกชื่อจาก Dropdown ก่อน",
 				Duration = 2
@@ -1172,7 +1172,7 @@ TabPlayer:CreateButton({
 			camera.CameraSubject = targetPlayer.Character:WaitForChild("Humanoid")
 			camera.CameraType = Enum.CameraType.Custom
 
-			Rayfield:Notify({
+			WindUI:Notify({
 				Title = "🎥 เริ่มมองผู้เล่น",
 				Content = "กำลังมอง: " .. targetPlayer.Name,
 				Duration = 2
@@ -1188,7 +1188,7 @@ TabPlayer:CreateButton({
 			camera.CameraSubject = player.Character:WaitForChild("Humanoid")
 			camera.CameraType = Enum.CameraType.Custom
 
-			Rayfield:Notify({
+			WindUI:Notify({
 				Title = "👁️ หยุดมองผู้เล่น",
 				Content = "กลับมามองตัวเองแล้ว",
 				Duration = 2
@@ -1211,8 +1211,6 @@ game.Players.PlayerRemoving:Connect(function()
 end)
 
 
-
-TabPlayer:CreateSection("AFK")
 local antiAFKConn=nil
 local function setAntiAFK(state)
     if state and not antiAFKConn then
@@ -1224,7 +1222,7 @@ local function setAntiAFK(state)
         antiAFKConn:Disconnect(); antiAFKConn=nil
     end
 end
-TabPlayer:CreateToggle({Name="กันหลุดเกม(Anti AFK)",CurrentValue=false,Flag="AntiAFK",Callback=function(s) setAntiAFK(s) end})
+TabPlayer:Toggle({Title="กันหลุดเกม(Anti AFK)",CurrentValue=false,Flag="AntiAFK",Callback=function(s) setAntiAFK(s) end})
 
 local function isKillerTeam() local tn=LP.Team and LP.Team.Name and LP.Team.Name:lower() or "" return tn:find("killer",1,true)~=nil end
 local guiWhitelist = {Rayfield=true,DevConsoleMaster=true,RobloxGui=true,PlayerList=true,Chat=true,BubbleChat=true,Backpack=true}
@@ -1323,8 +1321,7 @@ local function evalNoSkill()
     end
 end
 LP:GetPropertyChangedSignal("Team"):Connect(evalNoSkill)
-TabMisc:CreateSection("Skillcheck")
-TabMisc:CreateToggle({Name="ปั่นไฟเอง",CurrentValue=false,Flag="NoSkill",Callback=function(s) noSkillToggleUser=s evalNoSkill() end})
+TabMisc:Toggle({Title="ปั่นไฟเอง",CurrentValue=false,Flag="NoSkill",Callback=function(s) noSkillToggleUser=s evalNoSkill() end})
 
 local function findExitLevers()
     local list={}
@@ -1356,7 +1353,7 @@ TabMisc:Button({
         for _,p in ipairs(levers) do local d=(p.Position-hrp.Position).Magnitude if d<bd then bd=d pick=p end end
     end
     teleportRightOfLever(pick)
-    windui:Notify({Title="Instant-Escape",Content="Teleported behind gate.",Duration=4})
+    WindUI:Notify({Title="Instant-Escape",Content="Teleported behind gate.",Duration=4})
 end})
 
 do
@@ -1521,7 +1518,7 @@ do
         Flag="AutoRepairGens",
         Callback=function(state)
             autoRepairEnabled = state
-            windui:Notify({Title="Auto-Repair",Content=state and "activated" or "deactivated",Duration=4})
+           WindUI:Notify({Title="Auto-Repair",Content=state and "activated" or "deactivated",Duration=4})
         end
     })
 
@@ -1541,8 +1538,8 @@ task.defer(function()
         pcall(function() SpeedLockToggle:Set(false) end)
     end
 end)
-windui:Notify({Title="Violence District",Content="Loaded",Duration=6})
-windui:Notify({Title="Info",Content="Fog purge by name enabled • ESP stable • Killer Speed-Auto-Off",Duration=6})
+WindUI:Notify({Title="Violence District",Content="Loaded",Duration=6})
+WindUI:Notify({Title="Info",Content="Fog purge by name enabled • ESP stable • Killer Speed-Auto-Off",Duration=6})
 
 
 TabMisc:Button({
@@ -1554,7 +1551,7 @@ end
 
 
 
-TabDiscord:eButton({
+TabDiscord:Button({
     Title = "📋 Copy Discord Link",
     Callback = function()
         local link = "https://discord.gg/U8qEGaNe6E"
