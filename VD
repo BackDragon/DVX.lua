@@ -240,8 +240,8 @@ TabESP:Toggle({Title="เปิดมองชื่อ",CurrentValue=false,Flag
     nametagsEnabled=s
     if playerESPEnabled or nametagsEnabled then startESPLoop() else stopESPLoop() end
 end})
-TabESP:ColorPicker({Title="สีผู้เอาชีวิตรอด",Color=survivorColor,Flag="SurvivorCol",Callback=function(c) survivorColor=c end})
-TabESP:ColorPicker({Title="สีนักฆ่า",Color=killerBaseColor,Flag="KillerCol",Callback=function(c) killerBaseColor=c killerColors.Killer=c end})
+TabESP:Colorpicker({Title="สีผู้เอาชีวิตรอด",Color=survivorColor,Flag="SurvivorCol",Callback=function(c) survivorColor=c end})
+TabESP:Colorpicker({Title="สีนักฆ่า",Color=killerBaseColor,Flag="KillerCol",Callback=function(c) killerBaseColor=c killerColors.Killer=c end})
 
 for _,p in ipairs(Players:GetPlayers()) do if p~=LP then watchPlayer(p) end end
 Players.PlayerAdded:Connect(watchPlayer)
@@ -490,20 +490,17 @@ local function setWorldToggle(cat, state)
     end
 end
 
-TabWorld:CreateSection("มองของต่างๆ")
-TabWorld:Toggle({Name="เครื่องปั่นไฟ",CurrentValue=false,Flag="Gen",Callback=function(s) setWorldToggle("Generator", s) end})
-TabWorld:Toggle({Name="แท่นวาง",CurrentValue=false,Flag="Hook",Callback=function(s) setWorldToggle("Hook", s) end})
-TabWorld:Toggle({Name="ประตู",CurrentValue=false,Flag="Gate",Callback=function(s) setWorldToggle("Gate", s) end})
-TabWorld:Toggle({Name="หน้าต่าง",CurrentValue=false,Flag="Window",Callback=function(s) setWorldToggle("Window", s) end})
-TabWorld:Toggle({Name="แผ่นไม้",CurrentValue=false,Flag="Pallet",Callback=function(s) setWorldToggle("Palletwrong", s) end})
-TabWorld:Toggle({Name="ฟักทอง",CurrentValue=false,Flag="Pumpkin",Callback=function(s) setWorldToggle("Pumpkin", s) end})
-TabWorld:CreateSection("Colors")
-TabWorld:ColorPicker({Name="สีเครื่องปั่นไฟ",Color=worldColors.Generator,Flag="GenCol",Callback=function(c) worldColors.Generator=c end})
-TabWorld:ColorPicker({Name="สีแท่นวาง",Color=worldColors.Hook,Flag="HookCol",Callback=function(c) worldColors.Hook=c end})
-TabWorld:ColorPicker({Name="สีประตู",Color=worldColors.Gate,Flag="GateCol",Callback=function(c) worldColors.Gate=c end})
-TabWorld:ColorPicker({Name="สีหน้าต่าง",Color=worldColors.Window,Flag="WinCol",Callback=function(c) worldColors.Window=c end})
-TabWorld:ColorPicker({Name="สีแผ่นไม้",Color=worldColors.Palletwrong,Flag="PalCol",Callback=function(c) worldColors.Palletwrong=c end})
-TabWorld:ColorPicker({Name="สีฟักทอง",Color=worldColors.Pumpkin,Flag="PumpCol",Callback=function(c) worldColors.Pumpkin=c end})
+
+TabWorld:Toggle({Title ="เครื่องปั่นไฟ",CurrentValue=false,Flag="Gen",Callback=function(s) setWorldToggle("Generator", s) end})
+TabWorld:Toggle({Title ="แท่นวาง",CurrentValue=false,Flag="Hook",Callback=function(s) setWorldToggle("Hook", s) end})
+TabWorld:Toggle({Title ="ประตู",CurrentValue=false,Flag="Gate",Callback=function(s) setWorldToggle("Gate", s) end})
+TabWorld:Toggle({Title ="หน้าต่าง",CurrentValue=false,Flag="Window",Callback=function(s) setWorldToggle("Window", s) end})
+TabWorld:Toggle({Title ="แผ่นไม้",CurrentValue=false,Flag="Pallet",Callback=function(s) setWorldToggle("Palletwrong", s) end})
+TabWorld:Colorpicker({Title ="สีเครื่องปั่นไฟ",Color=worldColors.Generator,Flag="GenCol",Callback=function(c) worldColors.Generator=c end})
+TabWorld:Colorpicker({Title ="สีแท่นวาง",Color=worldColors.Hook,Flag="HookCol",Callback=function(c) worldColors.Hook=c end})
+TabWorld:Colorpicker({Title ="สีประตู",Color=worldColors.Gate,Flag="GateCol",Callback=function(c) worldColors.Gate=c end})
+TabWorld:Colorpicker({Title ="สีหน้าต่าง",Color=worldColors.Window,Flag="WinCol",Callback=function(c) worldColors.Window=c end})
+TabWorld:Colorpicker({Title ="สีแผ่นไม้",Color=worldColors.Palletwrong,Flag="PalCol",Callback=function(c) worldColors.Palletwrong=c end})
 
 local initLighting = {
     Brightness = Lighting.Brightness,
@@ -530,9 +527,9 @@ local function bindTimeLock()
     end)
 end
 
-TabVisual:CreateSection("เปิดแมพสว่าง")
-TabVisual:CreateToggle({
-    Name="ปรับแสง", CurrentValue=false, Flag="Fullbright",
+
+TabVisual:Toggle({
+    Title ="ปรับแสง", CurrentValue=false, Flag="Fullbright",
     Callback=function(s)
         fullbrightEnabled = s
         if fbLoop then task.cancel(fbLoop) fbLoop=nil end
@@ -555,7 +552,7 @@ TabVisual:CreateToggle({
         end
     end
 })
-TabVisual:CreateSlider({Name="ปรับเวลาใน1วัน",Range={0,24},Increment=1,CurrentValue=Lighting.ClockTime,Flag="TimeOfDay",Callback=function(v) desiredClockTime=v Lighting.ClockTime=v bindTimeLock() end})
+TabVisual:Slider({Title ="ปรับเวลาใน1วัน", Title={Min=16, Max=700, Default=16},Increment=1,CurrentValue=Lighting.ClockTime,Flag="TimeOfDay",Callback=function(v) desiredClockTime=v Lighting.ClockTime=v bindTimeLock() end})
 
 local nfActive=false
 local nfStore={conns={},tick=nil}
