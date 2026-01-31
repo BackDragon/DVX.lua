@@ -101,11 +101,11 @@ local Window = WindUI:CreateWindow({
     KeySystem = false
 })
 
-local TabPlayer = Window:CreateTab({ Title = "ผู้เล่น", Icon = "user" })
-local TabESP    = Window:CreateTab({ Title = "ESP", Icon = "eye" })
-local TabWorld  = Window:CreateTab({ Title = "มองของในแมพ", Icon = "map" })
-local TabVisual = Window:CreateTab({ Title = "ปรับแสง", Icon = "sun" })
-local TabMisc   = Window:CreateTab({ Title = "ตั้งค่าช่วยเล่น", Icon = "settings" })
+local TabPlayer = Window:Tab({ Title = "ผู้เล่น", Icon = "user" })
+local TabESP    = Window:Tab({ Title = "ESP", Icon = "eye" })
+local TabWorld  = Window:Tab({ Title = "มองของในแมพ", Icon = "map" })
+local TabVisual = Window:Tab({ Title = "ปรับแสง", Icon = "sun" })
+local TabMisc   = Window:Tab({ Title = "ตั้งค่าช่วยเล่น", Icon = "settings" })
 
 local function getRole(p)
     local tn = p.Team and p.Team.Name and p.Team.Name:lower() or ""
